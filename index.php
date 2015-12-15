@@ -25,87 +25,97 @@ print_r($bd);
 if($bd['игрушка детская велосипед']['количество заказано']>=3) {
     $bd['игрушка детская велосипед']['diskont'] = 3;
 }
+$itog_cena=array();
+$itog_tovar=array();
 
 
-function diskont($bd){
-    global $discont;
-    static $skidka, $cena, $tovar;
-    echo "<h1>Корзина: </h1> 
-        <tables>
-        <thead>
-            <td> Наименование товара</td>
-            <td> Цена </td>
-            <td> Скидка</td>
-            <td> Цена с учетом скидки</td>
-            <td> Заказ</td>
-            <td> Остаток на складе</td>
-            <td> Кол-во товара к выдаче</td>
-        </thead>";
-    
-        
-    foreach ($bd as $keys => $param){
-        echo "<tr><td>". $keys . "</td";
-        
-        $unit= diskont ($param['цена'], $param['количество заказано'], $param['discont']);
-        
-        if ($param['количество заказано']!==0){
-            echo "<td>", $param['цена'], "</td>
-                <td>" ,$unit['diskont']*10, " % </td>
-                <td>" ,$unit['цена']*$skidka, " </td>
-                <td>" ,$param['количество заказано'], " </td>
-                <td>" ,$param['осталось на складе'], " </td>
-                <td>" ,$tovar, " % </td>";
-        }  else {
-            echo "<td>", $param['цена'], "</td>
-                <td>" , 0 , " </td>
-                <td>" , 0 , " </td>
-                <td>" , 0 , " </td>
-                <td>" , 0 , " </td>
-                <td>" , 0 , " </td>";
+function unit($ostatok, $zakaz, $cena){
+    global $tovar;
+    if ($ostatok==0){
+            echo 'Уведомление: К сожалению данного товара сейчас нет на складе',"\n";
+            $tovar=0;
+        }elseif ($ostatok < $zakaz){
+            echo 'Уведомление: Товар доступен в кол-ве: ', $ostatok,' шт., ', 'по цене: ',$cena, ' руб. за шт.', "\n";
+            $tovar=$ostatok;
+        }elseif ($ostatok >= $zakaz){
+            echo 'Товар доступен в кол-ве: ', $zakaz, ' шт., ', 'по цене: ',$cena, ' руб. за шт.', "\n";
+            $tovar=$zakaz;
+        }else {
+            echo 'Ошибка расчета товара';
         }
-    
-        if ($param['осталось на складе'] >= $param['количество заказано'] ){
-                $cena = $param['цена']*$param['количество заказано'];
-                $tovar = $param['количество заказано'];
-            }elseif ($param['осталось на складе'] < $param['количество заказано']) {
-                $cena = $param['цена']*$param['осталось на складе'];
-                $tovar = $param['осталось на складе'];
-            }else{
-                echo 'Ошибка определения кол-ва товара ';
-            } 
-       
-        
-            
-        $discont= preg_replace("/[^0-3]", $param['discont']);
-            switch ($discont){
-                case 0:
-                    $skidka=1;
-                    break;
+}
+
+function diskont($diskont){
+    global $price;
+    $skidka = substr($diskont, 7, 2);
+        switch ($skidka){
                 case 1:
-                    $skidka=0.9;
+                    $price=0.9;
+                    echo 'Скидка на товар составляет 10 %'. "\n";
                     break;
                 case 2:
-                    $skidka=0.8;
+                    $price=0.8;
+                    echo 'Скидка на товар составляет 20 %'. "\n";
                     break;
                 case 3:
-                    $skidka=0.7;
+                    $price=0.7;
+                    echo 'Скидка на товар составляет 20 %'. "\n";
                     break;
-                default :
-                    echo 'Ошибка расчета дисконта';
+                default:
+                    $price=1;
+                    echo 'Скидка на товар отсутствует'. "\n";
+                    break;
+                }
+}
+
+
+
+foreach ($bd as $keys => $param){
+            echo  $keys. "\n";
+            unit($param['осталось на складе'], $param['количество заказано'], $param['цена']);
+            diskont($param['diskont']);
+            echo 'стоимость товара составит = ', $itog_cena = $tovar*$param['цена']*$price, "\n", "\n";
+            $itog_tovar += $tovar;
+           
+}
+
+echo "\n", 'Итого :', "\n";
+echo 'Общее кол-во товара к выдаче = ', $itog_tovar ;
+
+
+
+
+function basket($bd){
+    global $tovar, $skidka;
+        foreach ($bd as $keys => $param){
+            $diskount= diskount($param['цена'], $param['количество заказано'], $param['discont']);
+            echo  $keys;
+            echo 'Стоимость за единицу товара', $param['цена'],"\n",
+                 'Ваша скидка составила' ,$diskount['skidka']*10,
+                 ' ' ,$diskount['price']*$skidka, " </td>
+                <td>" ,$param['количество заказано'], " </td>
+                <td>" ,$param['осталось на складе'], " </td>
+                <td>" ,$tovar, "</td></tr>";
+        }
+    if ($param['осталось на складе'] >= $param['количество заказано'] ){
+                $tovar = $param['количество заказано'];
+            }else {
+                //$cena = $param['цена']*$param['осталось на складе'];
+                $tovar = $param['осталось на складе'];
             }
+        //return $cena; 
     
-        $prise= $skidka*$cena;
-    }
-}    
+}
+
+function diskount ($price, $zakaz, $diskont){
+    $skidka = substr($diskont, 7, 2);
+    $price_with_discont= $price - ($price*($skidka*10)/100);
+    $total_prise_all= $zakaz * $price_with_discont;
     
- diskont($bd);   
-echo "<h2>Итого:</h2>";
-
-
-
-
-
-
-
+    return array('skidka' => $skidka, "0%",
+                'price' => $price_with_discont,
+                'price_total' => $total_prise_all);
+    
+}
 
 ?>
