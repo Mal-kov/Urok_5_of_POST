@@ -85,6 +85,7 @@ echo "<table border=1>
                 <td>Наименование<br>товара</td>
                 <td>Цена<br>товара</td>
                 <td>Скидка</td>
+                <td>Цена<br>со скидкой</td>
                 <td>Кол-во<br>заказано</td>
                 <td>Наличие<br>на складе</td>
                 <td>Сумма<br>фактич.</td></tr>";
@@ -100,6 +101,7 @@ foreach ($bd as $keys => $param){
                 <td>$keys</td>
                 <td>",$param['цена'],"</td>
                 <td>",$skidka,"0%</td>
+                <td>",$param['цена']*$price,"</td>
                 <td>",$param['количество заказано'],"</td>
                 <td>",$param['осталось на складе'],"</td>
                 <td>",$itog_cena,"</td></tr>";
