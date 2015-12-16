@@ -32,7 +32,7 @@ if($bd['игрушка детская велосипед']['количество
 }
 $itog_cena=array();
 $itog_tovar=0;
-$itog_zakaz=0;
+$itog_zakaz_total=0;
 $total_price=0;
 $n=1;
 
@@ -106,13 +106,13 @@ foreach ($bd as $keys => $param){
         $n=$n+1;
         $total_price = $total_price + $itog_cena;
         $itog_tovar = $itog_tovar + $tovar;
-        $itog_zakaz = $itog_zakaz + $param['количество заказано'];
+        $itog_zakaz_total += $itog_zakaz ;
         
         
 }
 echo "<table><tbody>
         <tr><td>ИТОГО по заказу:</td><td>- наименований: ",$n-1," </td></tr>
-        <tr><td></td><td>- всего единиц товара заказано: $itog_zakaz шт. </td></tr>
+        <tr><td></td><td>- всего единиц товара заказано: $itog_zakaz_total шт. </td></tr>
         <tr><td></td><td>- всего единиц товара к выдаче: $itog_tovar шт. </td></tr>
         <tr><td></td><td>- СУММА к оплате: $total_price руб.</td></tr>
         </tbody></table>";
