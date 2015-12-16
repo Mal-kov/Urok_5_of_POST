@@ -20,7 +20,10 @@ diskont = diskont'.  mt_rand(0, 2).';
 diskont = diskont'.  mt_rand(0, 2).';
 ';
 $bd = parse_ini_string($ini_string, true);
-print_r($bd);
+//print_r($bd);
+
+echo "<br>";
+echo "<b>Корзина:</b>","<br>";
 
 if($bd['игрушка детская велосипед']['количество заказано']>=3) {
     $bd['игрушка детская велосипед']['diskont'] = 'diskont3';
@@ -71,14 +74,14 @@ function diskont($diskont){
 }
 
 foreach ($bd as $keys => $param){
-        echo $keys ,"<br>";
+        echo "<b>$keys</b>" ,"<br>";
         unit($param['осталось на складе'], $param['количество заказано'], $param['цена']);
         diskont($param['diskont']);
         echo 'стоимость товара составит = ', $itog_cena = $tovar*$param['цена']*$price,"<br>","<br>";
         $total_price = $total_price + $itog_cena;    
 }
 
-echo "<b>", 'Итого :',"<br>";
+echo "<b>Итого :</b>","<br>";
 echo 'Общее кол-во товара к выдаче = ', $itog_tovar, "\n" ;
 echo 'На сумму = ', $total_price , "\n";
 ?>
